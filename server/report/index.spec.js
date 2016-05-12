@@ -20,7 +20,7 @@ var reportIndex = proxyquire('./index.js', {
   './report.controller': reportCtrlStub
 });
 
-describe('Thing API Router:', function() {
+describe('Report API Router:', function() {
 
   it('should return an express router instance', function() {
     expect(reportIndex).to.equal(routerStub);
