@@ -52,6 +52,7 @@ export function index(req, res) {
         console.log('err in res.sendFile');
         saveLog({
           url: url,
+          isConnectionAborted: true,
           filename: filename,
           fileSize: getFilesizeInBytes(pathToFile),
           processingTime: new Date() - start
@@ -62,7 +63,7 @@ export function index(req, res) {
 
       saveLog({
         url: url,
-        isSent: true,
+        isConnectionAborted: false,
         filename: filename,
         fileSize: getFilesizeInBytes(pathToFile),
         processingTime: new Date() - start
