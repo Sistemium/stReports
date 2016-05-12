@@ -2,7 +2,7 @@ grant connect to prt;
 grant dba to prt;
 
 meta.defineType 'prt.url';
-meta.defineType 'prt.status';
+meta.defineType 'prt.isSent:BOOLEAN';
 meta.defineType 'prt.filename';
 meta.defineType 'prt.fileSize:INTEGER';
 meta.defineType 'prt.processingTime:INTEGER';
