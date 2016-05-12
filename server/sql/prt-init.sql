@@ -1,14 +1,16 @@
 grant connect to prt;
 grant dba to prt;
 
-meta.defineType 'prt.url';
-meta.defineType 'prt.isSent:BOOLEAN';
-meta.defineType 'prt.filename';
-meta.defineType 'prt.fileSize:INTEGER';
-meta.defineType 'prt.processingTime:INTEGER';
+util.setUserOption 'asamium.default.domain', 'prt';
 
-meta.defineEntity 'prt.Log',
- 'url;isSent;filename;fileSize;processingTime'
+meta.defineType 'url';
+meta.defineType 'isConnectionAborted:BOOL';
+meta.defineType 'filename';
+meta.defineType 'fileSize:INTEGER';
+meta.defineType 'processingTime:INTEGER';
+
+meta.defineEntity 'Log',
+ 'url;isConnectionAborted;filename;fileSize;processingTime'
 ;
 
-meta.createTable 'prt.Log',0,1;
+meta.createTable 'Log',0,1;
