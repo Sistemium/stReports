@@ -8,7 +8,7 @@ meta.defineType 'prt.fileSize:INTEGER';
 meta.defineType 'prt.processingTime:INTEGER';
 
 meta.defineEntity 'prt.Log',
- 'url;status;filename;fileSize;processingTime'
+ 'url;isSent;filename;fileSize;processingTime'
 ;
 
 meta.createTable 'prt.Log',0,1;
