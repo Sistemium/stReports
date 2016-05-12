@@ -7,9 +7,7 @@ angular.module('streportsApp', [
   'ngSanitize',
   'ui.router'
 ])
-  .config(function($urlRouterProvider, $locationProvider) {
+  .config(function($urlRouterProvider) {
     $urlRouterProvider
       .otherwise('/');
-
-    $locationProvider.html5Mode(true);
   });
