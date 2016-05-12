@@ -9,4 +9,5 @@ if (env === 'development' || env === 'test') {
 }
 
 // Export the application
+//noinspection JSUnresolvedVariable
 exports = module.exports = require('./app');
