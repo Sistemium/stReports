@@ -38,8 +38,6 @@ gulp.task('build', cb => {
 
 gulp.task('clean:dist', () => del([`${conf.dist}/!(.git*|.openshift|Procfile)**`], {dot: true}));
 
-
-
 gulp.task('html', function () {
   return gulp.src(`${conf.clientPath}/{app,components}/**/*.jade`)
     .pipe(plugins.jade({pretty: true}))
@@ -53,9 +51,6 @@ gulp.task('jade', function () {
     .pipe(plugins.jade())
     .pipe(gulp.dest('.tmp'));
 });
-
-
-
 
 gulp.task('build:client', ['transpile:client', 'styles', 'html', 'constant'], () => {
   var manifest = gulp.src(`${conf.dist}/${conf.clientPath}/assets/rev-manifest.json`);

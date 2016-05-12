@@ -23,6 +23,7 @@ function waitFor(testFx, onReady, timeOutMillis) {
     interval = setInterval(function () {
       if ((new Date().getTime() - start < maxtimeOutMillis) && !condition) {
         // If not time-out yet and condition not yet fulfilled
+        /*jslint evil: true */
         condition = (typeof(testFx) === "string" ? eval(testFx) : testFx());
       } else {
         if (!condition) {
@@ -33,23 +34,24 @@ function waitFor(testFx, onReady, timeOutMillis) {
           // Condition fulfilled (timeout and/or condition is 'true')
           console.log("'waitFor()' finished in " + (new Date().getTime() - start) + "ms.");
           // onReady: Do what it's supposed to do once the condition is fulfilled
+          /*jslint evil: true */
           typeof(onReady) === "string" ? eval(onReady) : onReady();
           clearInterval(interval); //< Stop this interval
         }
       }
     }, 250); //< repeat check every 250ms
-};
+}
 
 var page = require('webpage').create(),
   system = require('system'),
   fs = require('fs'),
-  address, output, page;
+  address, outputFile, page;
 
 page.onConsoleMessage = function(msg) {
   console.log(msg);
 };
 
-if (system.args.length != 3) {
+if (system.args.length !== 3) {
   console.log('Usage: phantomjs load_ajax.js URL output_filename');
   phantom.exit(1);
 } else {
