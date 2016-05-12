@@ -24,4 +24,5 @@ function startServer() {
 setImmediate(startServer);
 
 // Expose app
+//noinspection JSUnresolvedVariable
 exports = module.exports = app;

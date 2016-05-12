@@ -1,29 +1,26 @@
 'use strict';
 
-var app = require('../..');
+var app = require('..');
 import request from 'supertest';
 
-describe('Thing API:', function() {
+describe('Report API:', function() {
 
-  describe('GET /api/things', function() {
-    var things;
+  describe('GET /report', function() {
 
     beforeEach(function(done) {
       request(app)
-        .get('/api/things')
+        .get('/report')
         .expect(200)
         .expect('Content-Type', /json/)
         .end((err, res) => {
           if (err) {
             return done(err);
           }
-          things = res.body;
           done();
         });
     });
 
     it('should respond with JSON array', function() {
-      expect(things).to.be.instanceOf(Array);
     });
 
   });
