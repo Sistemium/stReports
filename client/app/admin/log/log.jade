@@ -1,0 +1,13 @@
+.panel.panel-info
+  .panel-body
+
+  section.row
+    .col-sm-12
+      .container
+        h1 Logs
+
+        table.table.table-striped.table-hover(ng-table='vm.ngTableParams')
+          tr(ng-repeat='row in $data track by row.id')
+            td(
+            title="'Имя'"
+            ) {{ ::row}}
