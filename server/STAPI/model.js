@@ -80,7 +80,7 @@ function model(name) {
             e = res.statusCode !== 201 && json;
           }
           debug('save', e);
-          e && reject(e) || resolve(body);
+          e && reject(e) || resolve(json);
         });
 
       });
