@@ -6,6 +6,7 @@
 
 import errors from './components/errors';
 import path from 'path';
+import fs from 'fs';
 
 export default function(app) {
   // Insert routes below
@@ -20,4 +21,11 @@ export default function(app) {
   //  .get((req, res) => {
   //    res.sendFile(path.resolve(app.get('appPath') + '/index.html'));
   //  });
+
+  app.route('/files/:filename')
+    .get((req, res) => {
+      var file = path.join(__dirname , 'report/files', req.params.filename);
+      var filestream = fs.createReadStream(file);
+      filestream.pipe(res);
+    });
 }
