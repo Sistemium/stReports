@@ -9,9 +9,9 @@ var uuid = require('node-uuid');
 var stapi = require('../STAPI/model');
 var log = stapi('prt/log');
 
-var domain = 'http://localhost:3000/#/';
+var domain = process.env.PRINTABLE;
 
-function deleteFile (file) {
+function deleteFile(file) {
   //fs.unlink(file, function (err) {
   //  if (err) console.log('Could not delete file', err);
   //  else console.log(file, 'successfully deleted!');
@@ -27,6 +27,15 @@ export function index(req, res) {
     path.join(__dirname, 'load-ajax.js'),
     `${url} ${pathToFile}`
   ];
+  var logId;
+
+  saveLog({
+    url: url,
+    isConnectionAborted: true,
+    filename: filename,
+    fileSize: null,
+    processingTime: null
+  });
 
   var start = new Date();
   childProcess.exec(`${binPath} ${childArgs[0]} ${childArgs[1]}`, (err, stdout, stderr) => {
@@ -43,49 +52,30 @@ export function index(req, res) {
 
     console.log(stdout);
 
-    res.sendFile(filename, {
-      root: dirName,
-      lastModified: false
-    }, function (err) {
-      if (err) {
-        console.log(err);
-        console.log('err in res.sendFile');
-        saveLog({
-          url: url,
-          isConnectionAborted: true,
-          filename: filename,
-          fileSize: getFilesizeInBytes(pathToFile),
-          processingTime: new Date() - start
-        });
-        deleteFile(pathToFile);
-        return res.sendStatus('Error occurred...');
-      }
-
-      saveLog({
-        url: url,
-        isConnectionAborted: false,
-        filename: filename,
-        fileSize: getFilesizeInBytes(pathToFile),
-        processingTime: new Date() - start
-      });
-      console.log('File sent!');
-      deleteFile(pathToFile);
+    res.redirect(path.join('/files', filename));
+    log().patch(logId, {
+      isConnectionAborted: false,
+      fileSize: getFilesizeInBytes(pathToFile),
+      processingTime: new Date() - start
     });
 
   });
+
+  function getFilesizeInBytes(filename) {
+    var stats = fs.statSync(filename);
+    return stats.size;
+  }
+
+  function saveLog(data) {
+    log().save(data)
+      .then((entity) => {
+        console.log('Log have been saved:', entity);
+        logId = entity.id;
+      })
+      .catch((err) => {
+        console.log('Error occurred:', err);
+      })
+  }
+
 }
 
-function getFilesizeInBytes(filename) {
-  var stats = fs.statSync(filename);
-  return stats.size;
-}
-
-function saveLog(data) {
-  log().save(data)
-    .then((entity) => {
-      console.log('Log have been saved:', entity);
-    })
-    .catch((err) => {
-      console.log('Error occurred:', err);
-    })
-}
