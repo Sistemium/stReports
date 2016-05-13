@@ -2,10 +2,9 @@
 
 angular.module('streportsApp', [
   'streportsApp.constants',
-  'ngCookies',
-  'ngResource',
-  'ngSanitize',
-  'ui.router'
+  'ui.router',
+  'sistemium',
+  'sistemiumBootstrap'
 ])
   .config(function($urlRouterProvider) {
     $urlRouterProvider
