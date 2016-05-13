@@ -4,7 +4,7 @@
   ng.module('streportsApp')
     .config(function (DSHttpAdapterProvider) {
       angular.extend(DSHttpAdapterProvider.defaults, {
-        basePath: 'api/admin/'
+        basePath: 'api/'
       });
     })
     .service('models', function (Schema) {

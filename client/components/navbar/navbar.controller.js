@@ -5,13 +5,16 @@ class NavbarController {
   menu = [{
     'title': 'Home',
     'state': 'main'
+  }, {
+    'title': 'Logs',
+    'state': 'admin.log'
   }];
 
   isCollapsed = true;
   //end-non-standard
 
   constructor() {
-    }
+  }
 }
 
 angular.module('streportsApp')

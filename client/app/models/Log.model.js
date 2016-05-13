@@ -1,10 +1,10 @@
 (function (ng) {
   'use strict';
   ng.module('streportsApp')
-    .factory('Log', function LogModel(DS) {
-      return DS.defineResource({
-        name: 'log'
-      })
+    .run(function LogModel(Schema) {
+      Schema.register({
+        name: 'Log'
+      });
     })
   ;
 

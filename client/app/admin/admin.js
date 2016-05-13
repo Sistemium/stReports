@@ -1,6 +1,6 @@
 (function (ng) {
   'use strict';
-  angular.module('streportsApp')
+  ng.module('streportsApp')
     .config(function ($stateProvider) {
       $stateProvider
         .state('admin', {
