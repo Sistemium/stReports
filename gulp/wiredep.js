@@ -13,7 +13,6 @@ gulp.task('wiredep:client', () => {
         /[^-]bootstrap.js$/,
         /json3/,
         /es5-shim/,
-        /bootstrap.css/,
         /font-awesome.css/
       ],
       ignorePath: paths.clientPath
