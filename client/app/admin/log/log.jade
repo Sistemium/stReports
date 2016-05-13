@@ -1,13 +1,20 @@
 .panel.panel-info
   .panel-body
-
-  section.row
-    .col-sm-12
-      .container
+    section.row
+      .col-sm-12
         h1 Logs
 
         table.table.table-striped.table-hover(ng-table='vm.ngTableParams')
-          tr(ng-repeat='row in $data track by row.id')
+          tr(ng-repeat='row in $data track by row.id' ng-click='vm.onClick(row.filename)')
             td(
-            title="'Имя'"
-            ) {{ ::row}}
+            title="'File name'"
+            ) {{ ::row.filename}}
+            td(
+            title="'Url'"
+            ) {{ ::row.url}}
+            td(
+            title="'File size'"
+            ) {{ ::row.fileSize}}
+            td(
+            title="'Is connection aborted'"
+            ) {{ ::row.isConnectionAborted}}
