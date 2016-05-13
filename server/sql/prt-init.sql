@@ -6,8 +6,8 @@ util.setUserOption 'asamium.default.domain', 'prt';
 meta.defineType 'url';
 meta.defineType 'isConnectionAborted:BOOL';
 meta.defineType 'filename';
-meta.defineType 'fileSize:INTEGER';
-meta.defineType 'processingTime:INTEGER';
+meta.defineType 'fileSize:INTEGER,,nullable';
+meta.defineType 'processingTime:INTEGER,,nullable';
 
 meta.defineEntity 'Log',
  'url;isConnectionAborted;filename;fileSize;processingTime'
