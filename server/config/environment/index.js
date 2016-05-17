@@ -22,7 +22,19 @@ var all = {
   port: process.env.PORT || 8999,
 
   // Server IP
-  ip: process.env.IP || '0.0.0.0'
+  ip: process.env.IP || '0.0.0.0',
+
+  api: {
+    S3: {
+      bucket: requiredProcessEnv('S3_BUCKET'),
+      domain: requiredProcessEnv('S3_DOMAIN')
+    }
+  },
+
+  awsCredentials: {
+    accessKeyId: requiredProcessEnv('AWS_ACCESS_KEY_ID'),
+    secretAccessKey: requiredProcessEnv('AWS_SECRET_ACCESS_KEY')
+  }
 };
 
 // Export the config object based on the NODE_ENV

@@ -8,6 +8,9 @@ var binPath = phantomjs.path;
 var uuid = require('node-uuid');
 var stapi = require('../STAPI/model');
 var log = stapi('prt/log');
+import conf from '../config/environment';
+import AWS from 'aws-sdk';
+var S3 = new AWS.S3(conf.awsCredentials);
 
 var domain = process.env.PRINTABLE;
 
