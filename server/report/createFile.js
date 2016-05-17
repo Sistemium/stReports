@@ -46,7 +46,7 @@ export default function (urlPath, extension) {
         filename: filename,
         url: url,
         processingTime: new Date() - start,
-        filesize: getFilesizeInBytes(filename),
+        fileSize: getFilesizeInBytes(pathToFile),
         pathToFile: pathToFile
       });
     });
