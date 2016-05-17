@@ -28,7 +28,9 @@ var all = {
     S3: {
       bucket: requiredProcessEnv('S3_BUCKET'),
       domain: requiredProcessEnv('S3_DOMAIN')
-    }
+    },
+    printable: requiredProcessEnv('PRINTABLE'),
+    stapi: requiredProcessEnv('STAPI')
   },
 
   awsCredentials: {
