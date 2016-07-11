@@ -13,15 +13,15 @@ export function index(req, res) {
     .then((response) => {
       return uploadFileToS3(response);
     }, (err) => {
-      console.log(err);
-      res.sendStatus(500);
+      console.log('Error while creatingFile to S3', err);
+      return res.sendStatus(500);
     })
     .then((fileUrl) => {
-      res.redirect(fileUrl);
+      return res.redirect(fileUrl);
     })
     .catch((err) => {
       console.log(err);
-      res.sendStatus(500);
+      return res.sendStatus(500);
     })
   ;
 }

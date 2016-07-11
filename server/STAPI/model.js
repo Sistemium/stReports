@@ -65,6 +65,10 @@ function model(name) {
     }
 
     function save(body) {
+
+      debug('body:', body);
+      debug('req.headers.authorization:', req);
+
       return new Promise(function (resolve, reject) {
 
         request.post({
@@ -74,6 +78,10 @@ function model(name) {
           },
           json: body
         }, function (err, res, json) {
+          if (err) {
+            debug('error while posting', err);
+          }
+
           debug(res.statusCode, json);
           let e = err || res.statusCode !== 200 && json;
           if (e) {
