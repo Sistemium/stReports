@@ -22,9 +22,7 @@ export default {
 
 
   transpileServer: lazypipe()
-    .pipe(plugins.sourcemaps.init)
-    .pipe(plugins.babel)
-    .pipe(plugins.sourcemaps.write, '.'),
+    .pipe(plugins.babel),
 
   mocha: lazypipe()
     .pipe(plugins.mocha, {
