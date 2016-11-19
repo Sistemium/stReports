@@ -3,20 +3,25 @@
 import AWS from 'aws-sdk';
 import conf from '../config/environment';
 import fs from 'fs';
-import stapi from '../STAPI/model';
+import {baseStapiModel} from 'sistemium-node';
 
-const log = stapi('prt/log');
+const log = baseStapiModel('prt/log');
 
 const S3 = new AWS.S3(conf.awsCredentials);
 
+const debug = require('debug')('stm:reports:uploadToS3');
+
 function deleteFile(file) {
   fs.unlink(file, function (err) {
-    if (err) console.log('Could not delete file', err);
-    else console.log(file, 'successfully deleted!');
+    if (err) {
+      return console.error('Could not delete file', err);
+    }
+    debug('deleteFile success', file);
   });
 }
 
 export default function (options) {
+
   let fileStream = fs.createReadStream(options.pathToFile);
 
   const params = {
@@ -26,26 +31,38 @@ export default function (options) {
     ContentType: options.contentType || 'application/pdf'
   };
 
-  return new Promise(function (resolve, reject) {
-    S3.putObject(params, (err) => {
+  return new Promise((resolve, reject) => {
+
+    S3.putObject(params, err => {
+
       if (err) {
-        console.log('Error occurred while uploading to S3:', err);
+        console.error('Error occurred while uploading to S3:', err);
         return reject(err);
       }
-      const fileUrl = conf.api.S3.awsUrl + '/' + conf.api.S3.bucket + '/' + options.filename;
 
-      log().save({
-        filename: options.filename,
-        url: options.url,
-        processingTime: options.processingTime,
-        fileSize: options.fileSize,
-        isConnectionAborted: false,
-        fileUrl: fileUrl
-      }).then(() => {
-        console.log('Log saved');
-        deleteFile(options.pathToFile);
-        resolve(fileUrl);
-      });
-    })
+      const fileUrl = `${conf.api.S3.awsUrl}/${conf.api.S3.bucket}/${options.filename}`;
+
+      try {
+        log({}).save({
+          filename: options.filename,
+          url: options.url,
+          processingTime: options.processingTime,
+          fileSize: options.fileSize,
+          isConnectionAborted: false,
+          fileUrl: fileUrl
+        })
+          .then(() => {
+            debug('Log saved');
+            deleteFile(options.pathToFile);
+            resolve(fileUrl);
+          })
+          .catch(reject);
+      } catch (e) {
+        reject(e);
+      }
+
+    });
+
   });
+
 }

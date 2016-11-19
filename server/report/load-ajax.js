@@ -73,8 +73,7 @@ if (system.args.length !== 3) {
           return !!document.getElementById('printReady');
         });
       }, function () {
-        console.log("The search results list should be visible now." +
-          " Downloading the web page for you..");
+        console.log("Downloading the web page");
         try {
           page.render(outputFile);
         } catch (e) {

@@ -7,6 +7,8 @@ import phantomjs from 'phantomjs-prebuilt';
 import uuid from 'node-uuid';
 import conf from '../config/environment';
 
+const debug = require('debug')('stm:reports:createFile');
+
 const domain = conf.api.printable;
 const binPath = phantomjs.path;
 const dirName = path.join(__dirname, 'files');
@@ -34,26 +36,26 @@ export default function (urlPath, extension) {
     childProcess.exec(`${binPath} ${childArgs[0]} ${childArgs[1]}`, (err, stdout, stderr) => {
 
       if (err) {
-        console.log(err);
-        console.log('err in childProcess');
+        debug('error:', err);
         return reject(err);
       }
 
       if (stderr) {
-        console.log(stderr);
-        console.log('stderr in childProcess');
+        debug(stderr);
         return reject(stderr);
       }
 
-      console.log(stdout);
-
-      resolve({
+      let result = {
         filename: filename,
         url: url,
         processingTime: new Date() - start,
         fileSize: getFilesizeInBytes(pathToFile),
         pathToFile: pathToFile
-      });
+      };
+
+      debug('childProcess finished:', result);
+
+      resolve(result);
 
     });
 
