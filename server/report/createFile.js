@@ -12,7 +12,7 @@ const binPath = phantomjs.path;
 const dirName = path.join(__dirname, 'files');
 
 function getFilesizeInBytes(filename) {
-  var stats = fs.statSync(filename);
+  let stats = fs.statSync(filename);
   return stats.size;
 }
 
@@ -26,15 +26,19 @@ export default function (urlPath, extension) {
     path.join(__dirname, 'load-ajax.js'),
     `${url} ${pathToFile}`
   ];
+
   return new Promise(function (resolve, reject) {
 
-    var start = new Date();
+    let start = new Date();
+
     childProcess.exec(`${binPath} ${childArgs[0]} ${childArgs[1]}`, (err, stdout, stderr) => {
+
       if (err) {
         console.log(err);
         console.log('err in childProcess');
         return reject(err);
       }
+
       if (stderr) {
         console.log(stderr);
         console.log('stderr in childProcess');
@@ -42,6 +46,7 @@ export default function (urlPath, extension) {
       }
 
       console.log(stdout);
+
       resolve({
         filename: filename,
         url: url,
@@ -49,6 +54,9 @@ export default function (urlPath, extension) {
         fileSize: getFilesizeInBytes(pathToFile),
         pathToFile: pathToFile
       });
+
     });
+
   });
+
 }
