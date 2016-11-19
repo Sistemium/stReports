@@ -18,17 +18,9 @@ gulp.task('test:e2e', ['env:all', 'env:test', 'start:server', 'webdriver_update'
   });
 });
 
-gulp.task('test:client', ['wiredep:test', 'constant'], (done) => {
-  new KarmaServer({
-    configFile: `${__dirname}/${paths.karma}`,
-    singleRun: false
-  }, function () {
-    done();
-  }).start();
-});
 
 gulp.task('test', cb => {
-  return runSequence('test:server', 'test:client', cb);
+  return runSequence('test:server', cb);
 });
 
 gulp.task('test:server', cb => {
