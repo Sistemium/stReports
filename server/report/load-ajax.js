@@ -51,13 +51,14 @@ page.onConsoleMessage = function(msg) {
   console.log(msg);
 };
 
-if (system.args.length !== 3) {
-  console.log('Usage: phantomjs load_ajax.js URL output_filename');
+if (system.args.length < 4) {
+  console.log('Usage: phantomjs load_ajax.js URL output_filename format');
   phantom.exit(1);
 } else {
   address = system.args[1];
   outputFile = system.args[2];
 
+  var format = system.args[3];
 
   // Open the address of the given webpage and, onPageLoad, do...
   page.open(address, function (status) {
@@ -75,7 +76,7 @@ if (system.args.length !== 3) {
       }, function () {
         console.log("Downloading the web page");
         try {
-          page.render(outputFile);
+          page.render(outputFile, {format: format});
         } catch (e) {
           console.log("Error while writing to the file. " + e.message)
         }

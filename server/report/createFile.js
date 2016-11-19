@@ -18,22 +18,24 @@ function getFilesizeInBytes(filename) {
   return stats.size;
 }
 
-export default function (urlPath, extension) {
+export default function (urlPath, format) {
+
+  format = format || 'pdf';
 
   const url = domain + urlPath;
   // generate filename from guid and extension, if extension not passed default is .pdf
-  const filename = uuid.v4() + (extension || '.pdf');
-  const pathToFile = path.join(dirName, '/', filename);
-  const childArgs = [
-    path.join(__dirname, 'load-ajax.js'),
-    `${url} ${pathToFile}`
-  ];
 
-  return new Promise(function (resolve, reject) {
+  const filename = `${uuid.v4()}.${format}`;
+  const pathToFile = path.join(dirName, '/', filename);
+
+  const childPath = path.join(__dirname, 'load-ajax.js');
+  const childArgs = `${url} ${pathToFile} ${format}`;
+
+  return new Promise((resolve, reject) => {
 
     let start = new Date();
 
-    childProcess.exec(`${binPath} ${childArgs[0]} ${childArgs[1]}`, (err, stdout, stderr) => {
+    childProcess.exec(`${binPath} ${childPath} ${childArgs}`, (err, stdout, stderr) => {
 
       if (err) {
         debug('error:', err);
@@ -50,7 +52,8 @@ export default function (urlPath, extension) {
         url: url,
         processingTime: new Date() - start,
         fileSize: getFilesizeInBytes(pathToFile),
-        pathToFile: pathToFile
+        pathToFile: pathToFile,
+        contentType: contentType(format)
       };
 
       debug('childProcess finished:', result);
@@ -61,4 +64,11 @@ export default function (urlPath, extension) {
 
   });
 
+}
+
+function contentType(format) {
+  return {
+    pdf: 'application/pdf',
+    png: 'image/png'
+  }[format]
 }
