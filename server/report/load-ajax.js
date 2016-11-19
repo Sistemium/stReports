@@ -1,91 +1,84 @@
-// Original code:
-// https://github.com/ariya/phantomjs/blob/master/examples/waitfor.js
-// https://github.com/ariya/phantomjs/blob/master/examples/rasterize.js
+var page = require('webpage').create();
+var system = require('system');
+var fs = require('fs');
 
-/**
- * Wait until the test condition is true or a timeout occurs. Useful for waiting
- * on a server response or for a ui change (fadeIn, etc.) to occur.
- *
- * @param testFx javascript condition that evaluates to a boolean,
- * it can be passed in as a string (e.g.: "1 == 1" or "$('#bar').is(':visible')" or
- * as a callback function.
- * @param onReady what to do when testFx condition is fulfilled,
- * it can be passed in as a string (e.g.: "1 == 1" or "$('#bar').is(':visible')" or
- * as a callback function.
- * @param timeOutMillis the max amount of time to wait. If not specified, 3 sec is used.
- */
+if (system.args.length < 4) {
 
-function waitFor(testFx, onReady, timeOutMillis) {
-  //< Default Max Timout is 20s
-  var maxtimeOutMillis = timeOutMillis ? timeOutMillis : 20000,
-    start = new Date().getTime(),
-    condition = false,
-    interval = setInterval(function () {
-      if ((new Date().getTime() - start < maxtimeOutMillis) && !condition) {
-        // If not time-out yet and condition not yet fulfilled
-        /*jslint evil: true */
-        condition = (typeof(testFx) === "string" ? eval(testFx) : testFx());
-      } else {
-        if (!condition) {
-          // If condition still not fulfilled (timeout but condition is 'false')
-          console.log("'waitFor()' timeout");
-          phantom.exit(1);
-        } else {
-          // Condition fulfilled (timeout and/or condition is 'true')
-          console.log("'waitFor()' finished in " + (new Date().getTime() - start) + "ms.");
-          // onReady: Do what it's supposed to do once the condition is fulfilled
-          /*jslint evil: true */
-          typeof(onReady) === "string" ? eval(onReady) : onReady();
-          clearInterval(interval); //< Stop this interval
-        }
-      }
-    }, 250); //< repeat check every 250ms
+  console.error('Usage: phantomjs load_ajax.js URL output_filename format');
+  phantom.exit(1);
+
 }
 
-var page = require('webpage').create(),
-  system = require('system'),
-  fs = require('fs'),
-  address, outputFile, page;
+var address = system.args[1];
+var outputFile = system.args[2];
+var format = system.args[3];
 
 page.onConsoleMessage = function(msg) {
   console.log(msg);
 };
 
-if (system.args.length < 4) {
-  console.log('Usage: phantomjs load_ajax.js URL output_filename format');
-  phantom.exit(1);
-} else {
-  address = system.args[1];
-  outputFile = system.args[2];
+page.open(address, function (status) {
 
-  var format = system.args[3];
+  if (status !== "success") {
+    return console.log("Unable to access network");
+  }
 
-  // Open the address of the given webpage and, onPageLoad, do...
-  page.open(address, function (status) {
+  waitFor(checkIfReady, done);
 
-    // Check for page load success
-    if (status !== "success") {
-      console.log("Unable to access network");
-    } else {
-      // Wait for 'printready'
-      waitFor(function () {
-        // Check in the page if a specific element is now visible
-        return page.evaluate(function () {
-          return !!document.getElementById('printReady');
-        });
-      }, function () {
-        console.log("Downloading the web page");
-        try {
-          page.render(outputFile, {format: format});
-        } catch (e) {
-          console.log("Error while writing to the file. " + e.message)
-        }
-        console.log("The web page has been downloaded at: " + outputFile);
-        phantom.exit();
-      });
+  function checkIfReady() {
+    return page.evaluate(function () {
+      return !!document.getElementById('printReady');
+    });
+  }
+
+  function done() {
+
+    console.log('Phantom start render');
+
+    try {
+      page.render(outputFile, {format: format});
+    } catch (e) {
+      console.error('Error while writing to the file. ' + e.message);
+      phantom.exit(1);
     }
 
-  });
+    console.log('Phantom finish render');
+    console.log(outputFile);
+    phantom.exit();
+
+  }
+
+});
+
+
+function waitFor(testFx, onReady, timeOutMillis) {
+
+  //< Default Max Timout is 20s
+
+  var maxtimeOutMillis = timeOutMillis ? timeOutMillis : 20000;
+  var start = new Date().getTime();
+  var condition = false;
+  var interval = setInterval(checkIfFinished, 250);
+
+  function checkIfFinished() {
+    if ((new Date().getTime() - start < maxtimeOutMillis) && !condition) {
+      // If not time-out yet and condition not yet fulfilled
+      /*jslint evil: true */
+      condition = (typeof(testFx) === "string" ? eval(testFx) : testFx());
+    } else {
+      if (!condition) {
+        // If condition still not fulfilled (timeout but condition is 'false')
+        console.log("'waitFor()' timeout");
+        phantom.exit(1);
+      } else {
+        // Condition fulfilled (timeout and/or condition is 'true')
+        console.log("'waitFor()' finished in " + (new Date().getTime() - start) + "ms.");
+        // onReady: Do what it's supposed to do once the condition is fulfilled
+        /*jslint evil: true */
+        typeof(onReady) === "string" ? eval(onReady) : onReady();
+        clearInterval(interval); //< Stop this interval
+      }
+    }
+  }
 
 }
-

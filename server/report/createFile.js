@@ -23,8 +23,6 @@ export default function (urlPath, format) {
   format = format || 'pdf';
 
   const url = domain + urlPath;
-  // generate filename from guid and extension, if extension not passed default is .pdf
-
   const filename = `${uuid.v4()}.${format}`;
   const pathToFile = path.join(dirName, '/', filename);
 
@@ -35,16 +33,31 @@ export default function (urlPath, format) {
 
     let start = new Date();
 
-    childProcess.exec(`${binPath} ${childPath} ${childArgs}`, (err, stdout, stderr) => {
+    debug('childProcess start:', format, url);
+
+    try {
+      childProcess.exec(
+        `${binPath} ${childPath} ${childArgs}`,
+        {timeout: 15000},
+        doneChildProcess
+      );
+    } catch(e) {
+      return reject(e);
+    }
+
+    function doneChildProcess(error, stdout, stderr) {
+
+      debug('childProcess finish:', stdout);
+
+      if (stderr) {
+        debug('stderr:', stderr);
+      }
+
+      let err = error || stderr;
 
       if (err) {
         debug('error:', err);
         return reject(err);
-      }
-
-      if (stderr) {
-        debug(stderr);
-        return reject(stderr);
       }
 
       let result = {
@@ -56,11 +69,11 @@ export default function (urlPath, format) {
         contentType: contentType(format)
       };
 
-      debug('childProcess finished:', result);
+      debug('childProcess success:', result);
 
       resolve(result);
 
-    });
+    }
 
   });
 
