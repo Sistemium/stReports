@@ -28,7 +28,8 @@ var all = {
     S3: {
       bucket: requiredProcessEnv('S3_BUCKET'),
       domain: requiredProcessEnv('S3_DOMAIN'),
-      awsUrl: requiredProcessEnv('S3_DOMAIN')
+      awsUrl: requiredProcessEnv('S3_DOMAIN'),
+      folder: requiredProcessEnv('S3_FOLDER'),
     },
     printable: requiredProcessEnv('PRINTABLE'),
     stapi: requiredProcessEnv('STAPI')

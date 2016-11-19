@@ -26,7 +26,7 @@ export default function (options) {
 
   const params = {
     Bucket: conf.api.S3.bucket,
-    Key: options.filename,
+    Key: `${conf.api.S3.folder}/${options.filename}`,
     Body: fileStream,
     ContentType: options.contentType || 'application/pdf'
   };
@@ -40,7 +40,7 @@ export default function (options) {
         return reject(err);
       }
 
-      const fileUrl = `${conf.api.S3.awsUrl}/${conf.api.S3.bucket}/${options.filename}`;
+      const fileUrl = `${conf.api.S3.awsUrl}/${conf.api.S3.bucket}/${params.Key}`;
 
       try {
         log({}).save({
