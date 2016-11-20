@@ -62,21 +62,17 @@ function waitFor(testFx, onReady, timeOutMillis) {
 
   function checkIfFinished() {
     if ((new Date().getTime() - start < maxtimeOutMillis) && !condition) {
-      // If not time-out yet and condition not yet fulfilled
       /*jslint evil: true */
       condition = (typeof(testFx) === "string" ? eval(testFx) : testFx());
     } else {
       if (!condition) {
-        // If condition still not fulfilled (timeout but condition is 'false')
-        console.log("'waitFor()' timeout");
+        console.log('waitFor timeout');
         phantom.exit(1);
       } else {
-        // Condition fulfilled (timeout and/or condition is 'true')
-        console.log("'waitFor()' finished in " + (new Date().getTime() - start) + "ms.");
-        // onReady: Do what it's supposed to do once the condition is fulfilled
+        console.log('waitFor() finished in ' + (new Date().getTime() - start) + 'ms.');
         /*jslint evil: true */
         typeof(onReady) === "string" ? eval(onReady) : onReady();
-        clearInterval(interval); //< Stop this interval
+        clearInterval(interval);
       }
     }
   }
