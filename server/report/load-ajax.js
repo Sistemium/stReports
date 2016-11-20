@@ -17,11 +17,28 @@ page.onConsoleMessage = function(msg) {
   console.log(msg);
 };
 
+if (format === 'pdf') {
+  page.paperSize = {
+    width: 1012,
+    height: 1395,
+    margin: '40px'
+  };
+  page.viewportSize = {
+    // width: 1240,
+    // height: 1754
+    width: 932,
+    height: 1315
+  };
+  // page.settings.dpi = 300;
+  // page.zoomFactor = 0.75;
+}
+
 page.open(address, function (status) {
 
   if (status !== "success") {
     return console.log("Unable to access network");
   }
+
 
   waitFor(checkIfReady, done);
 
