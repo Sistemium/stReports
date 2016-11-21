@@ -17,7 +17,6 @@
     "morgan": "^1.6.1",
     "phantomjs-prebuilt": "^2.1.13",
     "run-sequence": "^1.2.2",
-    "serve-favicon": "^2.3.2",
     "sistemium-node": "^0.1.13",
     "wrench": "^1.5.9"
   },
