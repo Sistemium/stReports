@@ -22,23 +22,23 @@ if (format === 'pdf') {
     width: 1012,
     height: 1395,
     margin: '40px'
+    // width: '210mm',
+    // height: '297mm',
+    // margin: '10mm'
   };
   page.viewportSize = {
-    // width: 1240,
-    // height: 1754
     width: 932,
     height: 1315
   };
-  // page.settings.dpi = 300;
-  // page.zoomFactor = 0.75;
 }
+
+page.zoomFactor = 2;
 
 page.open(address, function (status) {
 
   if (status !== "success") {
     return console.log("Unable to access network");
   }
-
 
   waitFor(checkIfReady, done);
 
