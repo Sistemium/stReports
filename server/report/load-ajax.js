@@ -40,6 +40,12 @@ page.open(address, function (status) {
     return console.log("Unable to access network");
   }
 
+  page.evaluate(function () {
+    /* jshint ignore:start */
+    console.log('window.devicePixelRatio:', window.devicePixelRatio = 2);
+    /* jshint ignore:end */
+  });
+
   waitFor(checkIfReady, done);
 
   function checkIfReady() {
