@@ -38,7 +38,7 @@ export default function (urlPath, format) {
     try {
       childProcess.exec(
         `${binPath} ${childPath} ${childArgs}`,
-        {timeout: 15000},
+        {timeout: 30000},
         doneChildProcess
       );
     } catch(e) {
