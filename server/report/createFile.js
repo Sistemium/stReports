@@ -28,6 +28,7 @@ export default function (urlPath, format) {
 
   const childPath = path.join(__dirname, 'load-ajax.js');
   const childArgs = `${url} ${pathToFile} ${format}`;
+  const timeoutMs = 30000;
 
   return new Promise((resolve, reject) => {
 
@@ -37,8 +38,8 @@ export default function (urlPath, format) {
 
     try {
       childProcess.exec(
-        `${binPath} ${childPath} ${childArgs}`,
-        {timeout: 30000},
+        `${binPath} ${childPath} ${childArgs} ${timeoutMs}`,
+        {timeout: timeoutMs + 5000},
         doneChildProcess
       );
     } catch(e) {

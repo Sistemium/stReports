@@ -12,8 +12,9 @@ if (system.args.length < 4) {
 var address = system.args[1];
 var outputFile = system.args[2];
 var format = system.args[3];
+var timeoutMs = system.args[4] || 20000;
 
-page.onConsoleMessage = function(msg) {
+page.onConsoleMessage = function (msg) {
   console.log(msg);
 };
 
@@ -36,6 +37,8 @@ page.zoomFactor = 2;
 
 page.open(address, function (status) {
 
+  console.log('Phantom start. Timeout is', timeoutMs);
+
   if (status !== "success") {
     return console.log("Unable to access network");
   }
@@ -46,17 +49,17 @@ page.open(address, function (status) {
     /* jshint ignore:end */
   });
 
-  waitFor(checkIfReady, done);
+  waitFor(checkIfReady, done, timeoutMs);
 
   function checkIfReady() {
     return page.evaluate(function () {
-      return !!document.getElementById('printReady');
+      var ifReady = !!document.getElementById('printReady');
+      var ifError = !!document.getElementById('errorReady');
+      return ifError && 'error' || ifReady && 'ready';
     });
   }
 
   function done() {
-
-    console.log('Phantom start render');
 
     try {
       page.render(outputFile, {format: format});
@@ -88,8 +91,11 @@ function waitFor(testFx, onReady, timeOutMillis) {
       /*jslint evil: true */
       condition = (typeof(testFx) === "string" ? eval(testFx) : testFx());
     } else {
-      if (!condition) {
-        console.log('waitFor timeout');
+      if (condition === 'error') {
+        console.error('Error from webpage:', condition);
+        phantom.exit(1);
+      } else if (!condition) {
+        console.error('waitFor timeout');
         phantom.exit(1);
       } else {
         console.log('waitFor() finished in ' + (new Date().getTime() - start) + 'ms.');
