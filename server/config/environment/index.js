@@ -38,6 +38,10 @@ var all = {
   awsCredentials: {
     accessKeyId: requiredProcessEnv('AWS_ACCESS_KEY_ID'),
     secretAccessKey: requiredProcessEnv('AWS_SECRET_ACCESS_KEY')
+  },
+
+  phantom: {
+    cachePath: process.env.PHANTOM_CACHE_PATH || false
   }
 };
 

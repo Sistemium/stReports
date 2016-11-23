@@ -12,6 +12,7 @@ const debug = require('debug')('stm:reports:createFile');
 const domain = conf.api.printable;
 const binPath = phantomjs.path;
 const dirName = path.join(__dirname, 'files');
+const cachePath = conf.phantom.cachePath;
 
 function getFilesizeInBytes(filename) {
   let stats = fs.statSync(filename);
@@ -29,6 +30,7 @@ export default function (urlPath, format) {
   const childPath = path.join(__dirname, 'load-ajax.js');
   const childArgs = `${url} ${pathToFile} ${format}`;
   const timeoutMs = 30000;
+  const cacheArg = cachePath ? `--disk-cache=true --disk-cache-path=${cachePath}` : '';
 
   return new Promise((resolve, reject) => {
 
@@ -38,7 +40,7 @@ export default function (urlPath, format) {
 
     try {
       childProcess.exec(
-        `${binPath} ${childPath} ${childArgs} ${timeoutMs}`,
+        `${binPath} ${cacheArg} ${childPath} ${childArgs} ${timeoutMs}`,
         {timeout: timeoutMs + 5000},
         doneChildProcess
       );
