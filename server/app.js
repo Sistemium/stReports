@@ -7,10 +7,14 @@
 import express from 'express';
 import config from './config/environment';
 import http from 'http';
+import debug from 'debug';
+
+debug.log = console.info.bind(console);
 
 // Setup server
-var app = express();
-var server = http.createServer(app);
+let app = express();
+let server = http.createServer(app);
+
 require('./config/express')(app);
 require('./routes')(app);
 
