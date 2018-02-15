@@ -4,14 +4,27 @@
 
 'use strict';
 
-import errors from './components/errors';
+import cors from 'cors';
 import path from 'path';
 import fs from 'fs';
 
 export default function(app) {
   // Insert routes below
+
+  app.use(cors({
+    allowedHeaders: [
+      'Page-Size', 'Start-Page',
+      'X-Page-Size', 'X-Start-Page',
+      'X-Return-Post',
+      'Authorization',
+      'ETag', 'Content-Type'
+    ],
+    exposedHeaders: ['Location']
+  }));
+
   app.use('/report', require('./report'));
   app.use('/api/log', require('./api/logs'));
+
   // All undefined asset or api routes should return a 404
   //app.route('/:url(api|auth|components|app|bower_components|assets)/*')
   // .get(errors[404]);
