@@ -20,18 +20,22 @@ function deleteFile(file) {
   });
 }
 
-export default function (options) {
+export default function (options, filename, title) {
 
   let fileStream = fs.createReadStream(options.pathToFile);
 
-  const params = {
+  let params = {
     Bucket: conf.api.S3.bucket,
-    Key: `${conf.api.S3.folder}/${options.filename}`,
+    Key: `${conf.api.S3.folder}/${filename || options.filename}`,
     Body: fileStream,
     ContentType: options.contentType || 'application/pdf'
   };
 
   return new Promise((resolve, reject) => {
+
+    if (title) {
+      params.ContentDisposition = `attachment; filename=${title};`
+    }
 
     S3.putObject(params, err => {
 

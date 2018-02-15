@@ -9,8 +9,13 @@ const log = baseStapiModel('prt/log');
 export function index(req, res) {
 
   createFile(req.query.path, req.query.format)
-    .then(response => uploadFileToS3(response))
+    .then(response => uploadFileToS3(response, req.query.filename, req.query.title))
     .then((fileUrl) => {
+      if (req.query.json) {
+        return res.json({
+          src: fileUrl
+        });
+      }
       return res.redirect(fileUrl);
     })
     .catch((err) => {
