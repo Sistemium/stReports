@@ -1,0 +1,21 @@
+{
+  "apps" : [{
+    "name"        : "REP-G",
+    "script"      : "app.js",
+    "cwd"         : "/var/www/prt/reportsNew",
+    "log_date_format" : "YYYY-MM-DD HH:mm:ss",
+    "node_args": "-r esm",
+    "env": {
+      "NODE_ENV": "production",
+      "DEBUG": "stm:*,authApi:*",
+      "S3_BUCKET": "gkgradus",
+      "S3_FOLDER": "reports",
+      "S3_DOMAIN": "https://s3-eu-west-1.amazonaws.com",
+      "AWS_ACCESS_KEY_ID": "AKIAJ2ULW7G3JGJWO6FA",
+      "AWS_SECRET_ACCESS_KEY": "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",
+      "PRINTABLE": "http://printable.sistemium.net/#/",
+      "STAPI": "http://api1.sistemium.net:8878/api/",
+      "PORT": "8877"
+    }
+  }]
+}

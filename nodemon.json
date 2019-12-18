@@ -1,0 +1,17 @@
+{
+  "env": {
+    "NODE_ENV": "development",
+    "DEBUG_NAMESPACE": "stm:prt",
+    "ERROR_NAMESPACE": "stm:prt:error",
+    "DEBUG": "stm:*,authApi:*",
+    "S3_BUCKET": "sisdev",
+    "S3_FOLDER": "reports",
+    "S3_DOMAIN": "https://s3-eu-west-1.amazonaws.com",
+    "AWS_ACCESS_KEY_ID": "AKIAIGVCFRCPC7P5CZCA",
+    "AWS_SECRET_ACCESS_KEY": "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",
+    "PRINTABLE": "http://printable.sistemium.net/#/",
+    "STAPI": "http://localhost:9090/api/",
+    "PHANTOM_CACHE_PATH": "/Users/sasha/Sites/prt/stReports/cache"
+  },
+  "ignore": ["report/files"]
+}
