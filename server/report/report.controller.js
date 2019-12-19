@@ -1,10 +1,10 @@
 'use strict';
 
-import {baseStapiModel} from 'sistemium-node';
+// import {baseStapiModel} from 'sistemium-node';
 import createFile from './createFile';
 import uploadFileToS3 from './uploadToS3'
 
-const log = baseStapiModel('prt/log');
+// const log = baseStapiModel('prt/log');
 
 export function index(req, res) {
 

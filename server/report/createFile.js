@@ -1,84 +1,75 @@
 'use strict';
 
 import path from 'path';
-import childProcess from 'child_process';
 import fs from 'fs';
-import phantomjs from 'phantomjs-prebuilt';
+import puppeteer from 'puppeteer';
 import uuid from 'node-uuid';
 import conf from '../config/environment';
 
 const debug = require('debug')('stm:reports:createFile');
 
 const domain = conf.api.printable;
-const binPath = phantomjs.path;
 const dirName = path.join(__dirname, 'files');
-const cachePath = conf.phantom.cachePath;
 
-function getFilesizeInBytes(filename) {
+function getFileSizeInBytes(filename) {
   let stats = fs.statSync(filename);
   return stats.size;
 }
 
-export default function (urlPath, format) {
-
-  format = format || 'pdf';
+export default async function (urlPath, format = 'pdf') {
 
   const url = domain + urlPath;
   const filename = `${uuid.v4()}.${format}`;
   const pathToFile = path.join(dirName, '/', filename);
 
-  const childPath = path.join(__dirname, 'load-ajax.js');
-  const childArgs = `${url} ${pathToFile} ${format}`;
-  const timeoutMs = 30000;
-  const cacheArg = cachePath ? `--disk-cache=true --disk-cache-path=${cachePath}` : '';
+  // const timeoutMs = 30000;
 
-  return new Promise((resolve, reject) => {
+  let start = new Date();
 
-    let start = new Date();
+  debug('childProcess start:', format, url);
 
-    debug('childProcess start:', format, url);
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
 
-    try {
-      childProcess.exec(
-        `${binPath} ${cacheArg} ${childPath} ${childArgs} ${timeoutMs}`,
-        {timeout: timeoutMs + 5000},
-        doneChildProcess
-      );
-    } catch(e) {
-      return reject(e);
-    }
+  if (format === 'png') {
+    await page.setViewport({
+      // TODO:
+      width: 870,
+      height: 600,
+      deviceScaleFactor: 2,
+    });
+    await page.goto(url, { waitUntil: 'networkidle0' });
+    await page.screenshot({
+      path: pathToFile,
+      omitBackground: true,
+    });
+  }
 
-    function doneChildProcess(error, stdout, stderr) {
+  if (format === 'pdf') {
+    await page.setViewport({
+      width: 932,
+      height: 1315,
+      deviceScaleFactor: 2,
+    });
+    await page.goto(url, { waitUntil: 'networkidle0' });
+    await page.pdf({
+      path: pathToFile,
+      width: 1012,
+      height: 1395,
+      margin: { top: 40, bottom: 40, left: 40, right: 40 },
+    });
+  }
 
-      debug('childProcess finish:', stdout);
+  await browser.close();
 
-      if (stderr) {
-        debug('stderr:', stderr);
-      }
-
-      let err = error || stderr;
-
-      if (err) {
-        debug('error:', err);
-        return reject(err);
-      }
-
-      let result = {
-        filename: filename,
-        url: url,
-        processingTime: new Date() - start,
-        fileSize: getFilesizeInBytes(pathToFile),
-        pathToFile: pathToFile,
-        contentType: contentType(format)
-      };
-
-      debug('childProcess success:', result);
-
-      resolve(result);
-
-    }
-
-  });
+  return {
+    url,
+    filename,
+    pathToFile,
+    processingTime: new Date() - start,
+    fileSize: getFileSizeInBytes(pathToFile),
+    contentType: contentType(format)
+  };
 
 }
 

@@ -1,7 +1,7 @@
 'use strict';
 
-var path = require('path');
-var _ = require('lodash');
+import path from 'path';
+import _ from 'lodash';
 
 function requiredProcessEnv(name) {
   if (!process.env[name]) {
@@ -12,7 +12,7 @@ function requiredProcessEnv(name) {
 
 // All configurations will extend these options
 // ============================================
-var all = {
+export default {
   env: process.env.NODE_ENV,
 
   // Root path of server
@@ -44,10 +44,3 @@ var all = {
     cachePath: process.env.PHANTOM_CACHE_PATH || false
   }
 };
-
-// Export the config object based on the NODE_ENV
-// ==============================================
-module.exports = _.merge(
-  all,
-  require('./shared'),
-  require('./' + process.env.NODE_ENV + '.js') || {});

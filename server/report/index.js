@@ -1,10 +1,10 @@
 'use strict';
 
-var express = require('express');
-var controller = require('./report.controller');
+import express from 'express';
+import { index } from './report.controller';
 
-var router = express.Router();
+const router = express.Router();
 
-router.get('/', controller.index);
+router.get('/', index);
 
-module.exports = router;
+export default router;

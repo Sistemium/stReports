@@ -12,11 +12,11 @@ import debug from 'debug';
 debug.log = console.info.bind(console);
 
 // Setup server
-let app = express();
-let server = http.createServer(app);
+export const app = express();
+const server = http.createServer(app);
 
-require('./config/express')(app);
-require('./routes')(app);
+require('./config/express').default(app);
+require('./routes').default(app);
 
 // Start server
 function startServer() {
@@ -26,7 +26,3 @@ function startServer() {
 }
 
 setImmediate(startServer);
-
-// Expose app
-//noinspection JSUnresolvedVariable
-exports = module.exports = app;

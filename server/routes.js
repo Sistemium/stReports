@@ -22,7 +22,7 @@ export default function(app) {
     exposedHeaders: ['Location']
   }));
 
-  app.use('/report', require('./report'));
+  app.use('/report', require('./report').default);
   app.use('/api/log', require('./api/logs'));
 
   // All undefined asset or api routes should return a 404
