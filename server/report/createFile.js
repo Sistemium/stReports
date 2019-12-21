@@ -24,50 +24,66 @@ export default async function (urlPath, format = 'pdf') {
 
   // const timeoutMs = 30000;
 
-  let start = new Date();
+  const start = new Date();
 
   debug('childProcess start:', format, url);
 
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({
+    args: ['--no-sandbox'],
+  });
   const page = await browser.newPage();
 
-  if (format === 'png') {
-    await page.setViewport({
-      // TODO:
-      width: 870,
-      height: 600,
-      deviceScaleFactor: 2,
-    });
-    await page.goto(url, { waitUntil: 'networkidle0' });
-    await page.screenshot({
-      path: pathToFile,
-      omitBackground: true,
-    });
-  }
+  let fileSize;
 
-  if (format === 'pdf') {
-    await page.setViewport({
-      width: 932,
-      height: 1315,
-      deviceScaleFactor: 2,
-    });
-    await page.goto(url, { waitUntil: 'networkidle0' });
-    await page.pdf({
-      path: pathToFile,
-      width: 1012,
-      height: 1395,
-      margin: { top: 40, bottom: 40, left: 40, right: 40 },
-    });
+  try {
+
+    if (format === 'png') {
+      await page.setViewport({
+        // TODO:
+        width: 870,
+        height: 600,
+        deviceScaleFactor: 2,
+      });
+      await page.goto(url, { waitUntil: 'networkidle0' });
+      await page.screenshot({
+        path: pathToFile,
+        omitBackground: true,
+      });
+    }
+
+    if (format === 'pdf') {
+      await page.setViewport({
+        width: 932,
+        height: 1315,
+        deviceScaleFactor: 2,
+      });
+      await page.goto(url, { waitUntil: 'networkidle0' });
+      await page.pdf({
+        path: pathToFile,
+        width: 1012,
+        height: 1395,
+        margin: { top: 40, bottom: 40, left: 40, right: 40 },
+      });
+    }
+
+    fileSize = getFileSizeInBytes(pathToFile);
+
+  } catch (e) {
+    debug('error:', e);
   }
 
   await browser.close();
+
+  if (!fileSize) {
+    throw new Error('File not created');
+  }
 
   return {
     url,
     filename,
     pathToFile,
+    fileSize,
     processingTime: new Date() - start,
-    fileSize: getFileSizeInBytes(pathToFile),
     contentType: contentType(format)
   };
 
