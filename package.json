@@ -5,27 +5,24 @@
   "scripts": {
     "start": "nodemon --exec 'node -r esm' -- server",
     "build": "rm -rf dist && cp -rv server dist && cp package.json dist",
-    "test": "gulp test"
+    "test": "echo NOT_IMPLEMENTED"
   },
   "dependencies": {
-    "aws-sdk": "^2.7.4",
-    "body-parser": "^1.15.2",
+    "aws-sdk": "^2.730.0",
+    "body-parser": "^1.19.0",
     "composable-middleware": "^0.3.0",
-    "compression": "^1.6.2",
-    "cookie-parser": "^1.4.3",
-    "cors": "^2.8.1",
+    "compression": "^1.7.4",
+    "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
     "debug": "^4.1.1",
     "errorhandler": "^1.5.0",
     "esm": "^3.2.25",
-    "express": "^4.14.0",
-    "express-session": "^1.14.2",
-    "jade": "^1.11.0",
-    "lusca": "^1.4.1",
-    "method-override": "^2.3.6",
+    "express": "^4.17.1",
+    "method-override": "^2.3.10",
     "morgan": "^1.9.1",
-    "puppeteer": "^2.0.0",
+    "puppeteer": "^5.2.1",
     "sistemium-node": "^0.1.15",
-    "node-uuid": "latest"
+    "uuid": "^8.3.0"
   },
   "devDependencies": {
     "nodemon": "^1.19.4"

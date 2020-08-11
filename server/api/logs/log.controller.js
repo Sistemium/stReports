@@ -1,6 +1,7 @@
 'use strict';
 
-import {baseStapiModel} from 'sistemium-node';
+import { baseStapiModel } from 'sistemium-node';
+
 const log = baseStapiModel('prt/log');
 
 export function index(req, res) {

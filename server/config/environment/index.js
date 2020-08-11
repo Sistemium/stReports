@@ -40,7 +40,4 @@ export default {
     secretAccessKey: requiredProcessEnv('AWS_SECRET_ACCESS_KEY')
   },
 
-  phantom: {
-    cachePath: process.env.PHANTOM_CACHE_PATH || false
-  }
 };
