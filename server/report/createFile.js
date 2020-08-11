@@ -3,7 +3,7 @@
 import path from 'path';
 import fs from 'fs';
 import puppeteer from 'puppeteer';
-import uuid from 'node-uuid';
+import * as uuid from 'uuid';
 import conf from '../config/environment';
 
 const debug = require('debug')('stm:reports:createFile');
@@ -16,17 +16,25 @@ function getFileSizeInBytes(filename) {
   return stats.size;
 }
 
-export default async function (urlPath, format = 'pdf') {
+export async function renderPdf(urlPath) {
+  return renderReport(urlPath, 'pdf');
+}
 
-  const url = domain + urlPath;
+export default async function (urlPath, format = 'pdf') {
   const filename = `${uuid.v4()}.${format}`;
-  const pathToFile = path.join(dirName, '/', filename);
+  const url = domain + urlPath;
+  return renderReport(url, format, filename);
+}
+
+async function renderReport(url, format, filename) {
+
+  const pathToFile = filename && path.join(dirName, '/', filename);
 
   // const timeoutMs = 30000;
 
   const start = new Date();
 
-  debug('childProcess start:', format, url);
+  debug('renderReport:', format, url);
 
   const browser = await puppeteer.launch({
     args: ['--no-sandbox'],
@@ -34,39 +42,19 @@ export default async function (urlPath, format = 'pdf') {
   const page = await browser.newPage();
 
   let fileSize;
+  let buffer;
 
   try {
 
     if (format === 'png') {
-      await page.setViewport({
-        // TODO:
-        width: 870,
-        height: 600,
-        deviceScaleFactor: 2,
-      });
-      await page.goto(url, { waitUntil: 'networkidle0' });
-      await page.screenshot({
-        path: pathToFile,
-        omitBackground: true,
-      });
+      buffer = await renderPng();
     }
 
     if (format === 'pdf') {
-      await page.setViewport({
-        width: 932,
-        height: 1315,
-        deviceScaleFactor: 2,
-      });
-      await page.goto(url, { waitUntil: 'networkidle0' });
-      await page.pdf({
-        path: pathToFile,
-        width: 1012,
-        height: 1395,
-        margin: { top: 40, bottom: 40, left: 40, right: 40 },
-      });
+      buffer = await renderPdf();
     }
 
-    fileSize = getFileSizeInBytes(pathToFile);
+    fileSize = pathToFile ? getFileSizeInBytes(pathToFile) : 0;
 
   } catch (e) {
     debug('error:', e);
@@ -74,7 +62,7 @@ export default async function (urlPath, format = 'pdf') {
 
   await browser.close();
 
-  if (!fileSize) {
+  if (!buffer) {
     throw new Error('File not created');
   }
 
@@ -84,8 +72,52 @@ export default async function (urlPath, format = 'pdf') {
     pathToFile,
     fileSize,
     processingTime: new Date() - start,
-    contentType: contentType(format)
+    contentType: contentType(format),
+    buffer,
   };
+
+  async function pageGo() {
+    await page.goto(url, { waitUntil: 'networkidle0' });
+    // await page.waitForFunction(async () => {
+    //   await new Promise(resolve => setTimeout(resolve, 1000));
+    // });
+  }
+
+  async function renderPdf() {
+    // await page.setViewport({
+    //   width: 932,
+    //   height: 1315,
+    //   deviceScaleFactor: 2,
+    // });
+    await pageGo();
+    const options = {
+      format: 'a4',
+      path: pathToFile || '',
+      printBackground: true,
+      // width: 932,
+      // height: 1315,
+      margin: { top: '1cm', bottom: '1cm', left: '1cm', right: '1cm' },
+      // displayHeaderFooter: true,
+      // headerTemplate: '<div></div>',
+      // footerTemplate: '<div style="font-size: 8px; text-align: right">Страница
+      // <span class="pageNumber"></span> / <span class="totalPages"></span></div>'
+    };
+    return page.pdf(options);
+  }
+
+  async function renderPng() {
+    await page.setViewport({
+      // TODO:
+      width: 870,
+      height: 600,
+      deviceScaleFactor: 2,
+    });
+    await pageGo();
+    await page.screenshot({
+      path: pathToFile,
+      omitBackground: true,
+    });
+  }
 
 }
 
