@@ -9,12 +9,6 @@ import conf from '../config/environment';
 const debug = require('debug')('stm:reports:createFile');
 
 const domain = conf.api.printable;
-const dirName = path.join(__dirname, 'files');
-
-function getFileSizeInBytes(filename) {
-  let stats = fs.statSync(filename);
-  return stats.size;
-}
 
 export async function renderPdf(urlPath) {
   return renderReport(urlPath, 'pdf');
@@ -28,10 +22,6 @@ export default async function (urlPath, format = 'pdf') {
 
 async function renderReport(url, format, filename) {
 
-  const pathToFile = filename && path.join(dirName, '/', filename);
-
-  // const timeoutMs = 30000;
-
   const start = new Date();
 
   debug('renderReport:', format, url);
@@ -41,7 +31,6 @@ async function renderReport(url, format, filename) {
   });
   const page = await browser.newPage();
 
-  let fileSize;
   let buffer;
 
   try {
@@ -53,8 +42,6 @@ async function renderReport(url, format, filename) {
     if (format === 'pdf') {
       buffer = await renderPdf();
     }
-
-    fileSize = pathToFile ? getFileSizeInBytes(pathToFile) : 0;
 
   } catch (e) {
     debug('error:', e);
@@ -69,8 +56,6 @@ async function renderReport(url, format, filename) {
   return {
     url,
     filename,
-    pathToFile,
-    fileSize,
     processingTime: new Date() - start,
     contentType: contentType(format),
     buffer,
@@ -92,7 +77,7 @@ async function renderReport(url, format, filename) {
     await pageGo();
     const options = {
       format: 'a4',
-      path: pathToFile || '',
+      path: '',
       printBackground: true,
       // width: 932,
       // height: 1315,
@@ -114,7 +99,7 @@ async function renderReport(url, format, filename) {
     });
     await pageGo();
     return page.screenshot({
-      path: pathToFile || '',
+      path: '',
       omitBackground: true,
     });
   }

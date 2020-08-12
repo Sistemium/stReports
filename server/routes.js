@@ -6,7 +6,6 @@
 
 import cors from 'cors';
 import report from './report';
-import logs from './api/logs';
 
 export default function(app) {
   // Insert routes below
@@ -24,6 +23,5 @@ export default function(app) {
 
 
   app.use('/report', report);
-  app.use('/api/log', logs);
 
 }
