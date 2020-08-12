@@ -113,8 +113,8 @@ async function renderReport(url, format, filename) {
       deviceScaleFactor: 2,
     });
     await pageGo();
-    await page.screenshot({
-      path: pathToFile,
+    return page.screenshot({
+      path: pathToFile || '',
       omitBackground: true,
     });
   }
