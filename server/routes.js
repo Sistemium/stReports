@@ -12,13 +12,10 @@ export default function(app) {
 
   app.use(cors({
     allowedHeaders: [
-      'Page-Size', 'Start-Page',
-      'X-Page-Size', 'X-Start-Page',
-      'X-Return-Post',
       'Authorization',
-      'ETag', 'Content-Type'
+      'Content-Type',
     ],
-    exposedHeaders: ['Location']
+    exposedHeaders: ['Location', 'Content-Disposition', 'Content-Type'],
   }));
 
 

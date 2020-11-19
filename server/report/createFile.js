@@ -20,7 +20,7 @@ export default async function (urlPath, format = 'pdf') {
   return renderReport(url, format, filename);
 }
 
-async function renderReport(url, format, filename) {
+export async function renderReport(url, format, filename, etc = {}) {
 
   const start = new Date();
 
@@ -62,7 +62,7 @@ async function renderReport(url, format, filename) {
   };
 
   async function pageGo() {
-    await page.goto(url, { waitUntil: 'networkidle0' });
+    await page.goto(url, {waitUntil: 'networkidle0'});
     // await page.waitForFunction(async () => {
     //   await new Promise(resolve => setTimeout(resolve, 1000));
     // });
@@ -81,7 +81,7 @@ async function renderReport(url, format, filename) {
       printBackground: true,
       // width: 932,
       // height: 1315,
-      margin: { top: '1cm', bottom: '1cm', left: '1cm', right: '1cm' },
+      margin: {top: '1cm', bottom: '1cm', left: '1cm', right: '1cm'},
       // displayHeaderFooter: true,
       // headerTemplate: '<div></div>',
       // footerTemplate: '<div style="font-size: 8px; text-align: right">Страница
@@ -91,17 +91,26 @@ async function renderReport(url, format, filename) {
   }
 
   async function renderPng() {
+
+    const { width = 870, height = 600, media, background = false, scale = 2 } = etc;
+
+    if (media) {
+      await page.emulateMediaType(media);
+    }
+
     await page.setViewport({
-      // TODO:
-      width: 870,
-      height: 600,
-      deviceScaleFactor: 2,
+      width,
+      height,
+      deviceScaleFactor: scale,
     });
+
     await pageGo();
+
     return page.screenshot({
       path: '',
-      omitBackground: true,
+      omitBackground: !background,
     });
+
   }
 
 }

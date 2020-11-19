@@ -6,6 +6,6 @@ import { index, pdf } from './report.controller';
 const router = express.Router();
 
 router.get('/', index);
-router.get('/pdf', pdf);
+router.get('/:format', pdf);
 
 export default router;
