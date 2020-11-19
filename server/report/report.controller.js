@@ -4,13 +4,20 @@
 import createFile, {renderReport} from './createFile';
 import uploadFileToS3 from './uploadToS3'
 import contentDisposition from 'content-disposition';
+import conf from '../config/environment';
 
 // const log = baseStapiModel('prt/log');
 
 export function index(req, res, next) {
 
-  createFile(req.query.path, req.query.format)
-    .then(response => uploadFileToS3(response, req.query.filename, req.query.title))
+  const {path, format, filename, title} = req.query;
+
+  const domain = conf.api.printable;
+
+  const { url = `${domain}${path}`} = req.query;
+
+  createFile(url, format)
+    .then(response => uploadFileToS3(response, filename, title))
     .then(fileUrl => {
       if (req.query.json) {
         return res.json({

@@ -1,5 +1,6 @@
 import AWS from 'aws-sdk';
 import conf from '../config/environment';
+import contentDisposition from 'content-disposition';
 
 const S3 = new AWS.S3(conf.awsCredentials);
 const debug = require('debug')('stm:reports:uploadToS3');
@@ -16,7 +17,7 @@ export default function (options, filename, title) {
   return new Promise((resolve, reject) => {
 
     if (title) {
-      params.ContentDisposition = `attachment; filename=${title};`
+      params.ContentDisposition = contentDisposition(title, {fallback: false});
     }
 
     S3.putObject(params, err => {

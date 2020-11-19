@@ -8,15 +8,12 @@ import conf from '../config/environment';
 
 const debug = require('debug')('stm:reports:createFile');
 
-const domain = conf.api.printable;
-
 export async function renderPdf(urlPath) {
   return renderReport(urlPath, 'pdf');
 }
 
-export default async function (urlPath, format = 'pdf') {
+export default async function (url, format = 'pdf') {
   const filename = `${uuid.v4()}.${format}`;
-  const url = domain + urlPath;
   return renderReport(url, format, filename);
 }
 
@@ -62,6 +59,7 @@ export async function renderReport(url, format, filename, etc = {}) {
   };
 
   async function pageGo() {
+    await page.setDefaultNavigationTimeout(conf.api.timeout);
     await page.goto(url, {waitUntil: 'networkidle0'});
     // await page.waitForFunction(async () => {
     //   await new Promise(resolve => setTimeout(resolve, 1000));
