@@ -32,7 +32,8 @@ export default {
       folder: requiredProcessEnv('S3_FOLDER'),
     },
     printable: requiredProcessEnv('PRINTABLE'),
-    stapi: requiredProcessEnv('STAPI')
+    stapi: requiredProcessEnv('STAPI'),
+    timeout: parseInt(process.env.TIMEOUT) || 60000,
   },
 
   awsCredentials: {
@@ -40,7 +41,4 @@ export default {
     secretAccessKey: requiredProcessEnv('AWS_SECRET_ACCESS_KEY')
   },
 
-  phantom: {
-    cachePath: process.env.PHANTOM_CACHE_PATH || false
-  }
 };

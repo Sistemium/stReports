@@ -10,3 +10,5 @@ npm-debug.log
 coverage
 /server/report/files
 cache
+nodemon.json
+pm2
