@@ -60,7 +60,7 @@ export async function renderReport(url, format, filename, etc = {}) {
 
   async function pageGo() {
     await page.setDefaultNavigationTimeout(conf.api.timeout);
-    await page.goto(url, {waitUntil: 'networkidle0'});
+    await page.goto(url, { waitUntil: 'networkidle0' });
     // await page.waitForFunction(async () => {
     //   await new Promise(resolve => setTimeout(resolve, 1000));
     // });
@@ -79,7 +79,7 @@ export async function renderReport(url, format, filename, etc = {}) {
       printBackground: true,
       // width: 932,
       // height: 1315,
-      margin: {top: '1cm', bottom: '1cm', left: '1cm', right: '1cm'},
+      margin: { top: '1cm', bottom: '1cm', left: '1cm', right: '1cm' },
       // displayHeaderFooter: true,
       // headerTemplate: '<div></div>',
       // footerTemplate: '<div style="font-size: 8px; text-align: right">Страница

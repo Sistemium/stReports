@@ -17,7 +17,7 @@ export default function (options, filename, title) {
   return new Promise((resolve, reject) => {
 
     if (title) {
-      params.ContentDisposition = contentDisposition(title, {fallback: false});
+      params.ContentDisposition = contentDisposition(title, { fallback: false });
     }
 
     S3.putObject(params, err => {

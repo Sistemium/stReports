@@ -1,7 +1,7 @@
 'use strict';
 
 // import {baseStapiModel} from 'sistemium-node';
-import createFile, {renderReport} from './createFile';
+import createFile, { renderReport } from './createFile';
 import uploadFileToS3 from './uploadToS3'
 import contentDisposition from 'content-disposition';
 import conf from '../config/environment';
@@ -10,11 +10,11 @@ import conf from '../config/environment';
 
 export function index(req, res, next) {
 
-  const {path, format, filename, title} = req.query;
+  const { path, format, filename, title } = req.query;
 
   const domain = conf.api.printable;
 
-  const { url = `${domain}${path}`} = req.query;
+  const { url = `${domain}${path}` } = req.query;
 
   createFile(url, format)
     .then(response => uploadFileToS3(response, filename, title))
@@ -32,8 +32,8 @@ export function index(req, res, next) {
 
 export function pdf(req, res, next) {
 
-  const {url, name, width, height, media, background, scale = '2'} = req.query;
-  const {format} = req.params;
+  const { url, name, width, height, media, background, scale = '2' } = req.query;
+  const { format } = req.params;
 
   if (!/^(png|pdf)$/.test(format)) {
     res.status(400).send('Wrong format. Allowed types are pdf and png');
@@ -52,17 +52,17 @@ export function pdf(req, res, next) {
   };
 
   if (width && height) {
-    Object.assign(options, {width: parseInt(width), height: parseInt(height)});
+    Object.assign(options, { width: parseInt(width), height: parseInt(height) });
   }
 
   renderReport(url, format, name, options)
-    .then(({buffer, contentType}) => {
+    .then(({ buffer, contentType }) => {
 
       res.contentType(contentType);
 
       if (name) {
         const nameExt = `${name.replace(/\//g, '-')}.${format}`;
-        const fileName = contentDisposition(nameExt, {fallback: false});
+        const fileName = contentDisposition(nameExt, { fallback: false });
         res.header('Content-Disposition', fileName);
       }
 
