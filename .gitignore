@@ -12,3 +12,6 @@ coverage
 cache
 nodemon.json
 pm2
+.DS_Store
+.env
+.env.local

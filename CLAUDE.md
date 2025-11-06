@@ -1,0 +1,143 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project Overview
+
+stReports is a TypeScript/Node.js service that renders web pages to PDF and PNG formats using Puppeteer. It's a simple HTTP service with a single endpoint for rendering URLs to different formats.
+
+## Development Commands
+
+### Running the Application
+```bash
+npm run dev
+```
+Starts the development server with tsx watch on port 8999 (default). Automatically reloads on file changes. Uses `dotenv-flow` to load environment variables from `.env` files.
+
+### Building
+```bash
+npm run build
+```
+Compiles TypeScript to JavaScript in the `dist` folder using `tsc`.
+
+### Type Checking
+```bash
+npm run typecheck
+```
+Runs TypeScript type checking without emitting files.
+
+### Production
+```bash
+npm start
+```
+Runs the compiled JavaScript from the `dist` folder.
+
+## Environment Configuration
+
+Copy `.env.example` to `.env` and configure the following variables:
+
+**Required:**
+- `S3_BUCKET` - AWS S3 bucket name
+
+**Optional:**
+- `PORT` - Server port (default: 8999)
+- `NODE_ENV` - Environment mode (default: development)
+- `S3_FOLDER` - S3 folder path (default: vfs)
+- `S3_DOMAIN` - S3 domain URL (default: https://s3-eu-west-1.amazonaws.com)
+- `TIMEOUT` - Puppeteer page load timeout in ms (default: 60000)
+- `DEBUG` - Debug namespace (e.g., `stm:*`)
+
+**AWS Credentials:**
+AWS credentials are loaded from environment variables or AWS instance role (for production). For local development, you can set:
+- `AWS_ACCESS_KEY_ID`
+- `AWS_SECRET_ACCESS_KEY`
+- `AWS_REGION`
+
+## Architecture
+
+### Project Structure
+```
+src/
+├── app.ts                      # Application entry point
+├── routes.ts                   # Route configuration
+├── config/
+│   ├── environment.ts          # Environment configuration
+│   └── express.ts              # Express middleware setup
+├── report/
+│   ├── index.ts                # Report router
+│   ├── report.controller.ts    # Request handlers
+│   ├── createFile.ts           # Puppeteer rendering logic
+│   └── uploadToS3.ts           # S3 upload functionality
+└── utils/
+    └── debug.ts                # Debug utility
+```
+
+### Request Flow
+1. Request arrives at `GET /report/:format` (format: pdf or png)
+2. `report.controller.ts` validates format and URL parameter
+3. `createFile.ts` uses Puppeteer to render the URL
+4. Response is sent directly to client with appropriate Content-Type
+5. Optionally, files can be uploaded to S3 using `uploadToS3.ts`
+
+### Key Components
+
+**src/app.ts**
+- Creates Express server and HTTP server
+- Configures middleware via `configureExpress()`
+- Registers routes via `configureRoutes()`
+- Starts listening on configured port
+
+**src/config/environment.ts**
+- Loads and validates environment variables
+- Provides typed configuration object
+- Throws errors for missing required variables
+
+**src/report/createFile.ts**
+- Uses Puppeteer with headless Chrome
+- Renders URLs to PDF (A4, 1cm margins) or PNG
+- PNG options: width, height, media emulation, background, scale
+- Waits for `networkidle0` before rendering
+- Returns buffer with metadata (contentType, processingTime)
+
+**src/report/uploadToS3.ts**
+- Uses AWS SDK v3 (`@aws-sdk/client-s3`)
+- Automatically uses credentials from environment or instance role
+- Uploads rendered files to configured S3 bucket
+- Returns public S3 URL
+
+## API Endpoints
+
+### GET /report/:format
+
+Renders a URL to the specified format (pdf or png).
+
+**Path Parameters:**
+- `format` - Output format: `pdf` or `png` (required)
+
+**Query Parameters:**
+- `url` - URL to render (required)
+- `name` - Optional filename for Content-Disposition header
+- `width` - PNG width in pixels (default: 870)
+- `height` - PNG height in pixels (default: 600)
+- `media` - Media type emulation for PNG (e.g., "print", "screen")
+- `background` - Include background in PNG: "true" or "1" (default: false)
+- `scale` - PNG device scale factor (default: 2)
+
+**Example:**
+```bash
+# Render PDF
+curl "http://localhost:8999/report/pdf?url=https://example.com"
+
+# Render PNG with custom dimensions
+curl "http://localhost:8999/report/png?url=https://example.com&width=1920&height=1080&scale=1"
+```
+
+## Technical Notes
+
+- Built with TypeScript 5.7+ and ES modules
+- Uses `tsx` for development with hot reload
+- AWS SDK v3 with automatic credential resolution
+- Puppeteer runs with `--no-sandbox` and `--disable-setuid-sandbox` flags
+- CORS enabled for all origins with specific headers
+- Debug logging available via `debug` package (namespace: `stm:reports:*`)
+- All renders happen in-memory (buffers), no disk writes
