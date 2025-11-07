@@ -68,6 +68,7 @@ Copy `.env.example` to `.env` and configure the following variables:
 - `S3_FOLDER` - S3 folder path (default: vfs)
 - `S3_DOMAIN` - S3 domain URL (default: https://s3-eu-west-1.amazonaws.com)
 - `TIMEOUT` - Puppeteer page load timeout in ms (default: 60000)
+- `PUPPETEER_EXECUTABLE_PATH` - Path to system Chromium (e.g., /usr/bin/chromium-browser)
 - `DEBUG` - Debug namespace (e.g., `stm:*`)
 
 **AWS Credentials:**
@@ -75,6 +76,25 @@ AWS credentials are loaded from environment variables or AWS instance role (for 
 - `AWS_ACCESS_KEY_ID`
 - `AWS_SECRET_ACCESS_KEY`
 - `AWS_REGION`
+
+**Puppeteer Setup:**
+The application uses `puppeteer-core` which requires a Chromium/Chrome binary. Two options:
+1. **Local development**: Install `puppeteer` (includes bundled Chromium) - will be used automatically if `PUPPETEER_EXECUTABLE_PATH` is not set
+2. **Production/Server**: Install system Chromium and set `PUPPETEER_EXECUTABLE_PATH`
+
+For Ubuntu/Debian servers (especially ARM64/Graviton):
+```bash
+sudo apt-get update
+sudo apt-get install -y chromium-browser \
+  libnss3 libatk-bridge2.0-0 libatk1.0-0 libx11-xcb1 libxcomposite1 \
+  libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2 \
+  libpangocairo-1.0-0 libpango-1.0-0 fonts-liberation libu2f-udev \
+  libvulkan1 ca-certificates fonts-noto fonts-noto-cjk fonts-noto-color-emoji
+```
+Then set in `.env.production`:
+```
+PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+```
 
 ## Architecture
 
@@ -92,7 +112,8 @@ src/
 │   ├── createFile.ts           # Puppeteer rendering logic
 │   └── uploadToS3.ts           # S3 upload functionality
 └── utils/
-    └── debug.ts                # Debug utility
+    ├── debug.ts                # Debug utility
+    └── launchBrowser.ts        # Puppeteer browser launcher
 ```
 
 ### Request Flow
@@ -129,6 +150,12 @@ src/
 - Automatically uses credentials from environment or instance role
 - Uploads rendered files to configured S3 bucket
 - Returns public S3 URL
+
+**src/utils/launchBrowser.ts**
+- Smart browser launcher for puppeteer-core
+- Uses system Chromium if `PUPPETEER_EXECUTABLE_PATH` is set (production)
+- Falls back to bundled Chromium from `puppeteer` package (local development)
+- Configures common Chrome flags for headless rendering
 
 ## API Endpoints
 
@@ -177,7 +204,8 @@ curl "http://localhost:8999/report/pdf?url=https://example.com&s3=true&filename=
 - Built with TypeScript 5.7+ and ES modules
 - Uses `tsx` for development with hot reload
 - AWS SDK v3 with automatic credential resolution
-- Puppeteer runs with `--no-sandbox` and `--disable-setuid-sandbox` flags
+- Uses `puppeteer-core` with system Chromium (production) or bundled Chromium (development)
+- Chromium runs with `--no-sandbox`, `--disable-setuid-sandbox`, `--disable-dev-shm-usage`, and `--disable-gpu` flags
 - CORS enabled for all origins with specific headers
 - Debug logging available via `debug` package (namespace: `stm:reports:*`)
 - All renders happen in-memory (buffers), no disk writes
