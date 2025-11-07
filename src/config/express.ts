@@ -1,12 +1,11 @@
-import { Express } from 'express';
-import bodyParser from 'body-parser';
+import express, { Express } from 'express';
 import compression from 'compression';
 import cors from 'cors';
 
 export function configureExpress(app: Express): void {
-  // Body parsing middleware
-  app.use(bodyParser.urlencoded({ extended: false }));
-  app.use(bodyParser.json());
+  // Body parsing middleware (built-in in Express 5+)
+  app.use(express.urlencoded({ extended: false }));
+  app.use(express.json());
 
   // Compression middleware
   app.use(compression());
