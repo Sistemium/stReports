@@ -1,7 +1,8 @@
-import puppeteer, { Page } from 'puppeteer';
+import { Page } from 'puppeteer-core';
 import { randomUUID } from 'crypto';
 import { createDebug } from '../utils/debug.js';
 import config from '../config/environment.js';
+import { launchBrowser } from '../utils/launchBrowser.js';
 
 const debug = createDebug('createFile');
 
@@ -33,13 +34,9 @@ export async function renderReport(
 
   // Generate filename if not provided
   const finalFilename = filename || `${randomUUID()}.${format}`;
-
   debug('renderReport:', format, url);
 
-  const browser = await puppeteer.launch({
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    headless: true,
-  });
+  const browser = await launchBrowser();
 
   let buffer: Buffer | undefined;
 

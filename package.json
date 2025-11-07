@@ -18,7 +18,7 @@
     "debug": "^4.3.7",
     "dotenv-flow": "^4.1.0",
     "express": "^5.1.0",
-    "puppeteer": "^24.29.1"
+    "puppeteer-core": "^24.29.1"
   },
   "devDependencies": {
     "@types/compression": "^1.7.5",
@@ -27,6 +27,7 @@
     "@types/debug": "^4.1.12",
     "@types/express": "^5.0.5",
     "@types/node": "^24.10.0",
+    "puppeteer": "^24.29.1",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2"
   },
