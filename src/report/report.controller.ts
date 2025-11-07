@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import contentDisposition from 'content-disposition';
 import { renderReport } from './createFile.js';
+import { uploadToS3 } from './uploadToS3.js';
 
 export async function renderHandler(
   req: Request,
@@ -8,7 +9,20 @@ export async function renderHandler(
   next: NextFunction
 ): Promise<void> {
   try {
-    const { url, name, width, height, media, background, scale = '2' } = req.query;
+    const {
+      url,
+      name,
+      width,
+      height,
+      media,
+      background,
+      scale = '2',
+      s3,
+      upload,
+      filename,
+      title,
+      json
+    } = req.query;
     const { format } = req.params;
 
     // Validate format
@@ -35,19 +49,39 @@ export async function renderHandler(
       options.height = parseInt(height as string, 10);
     }
 
+    // Generate filename for S3 if needed
+    const generatedFilename = filename as string | undefined;
+
     // Render the report
-    const result = await renderReport(url, format as 'pdf' | 'png', undefined, options);
+    const result = await renderReport(url, format as 'pdf' | 'png', generatedFilename, options);
 
-    // Set response headers
-    res.contentType(result.contentType);
+    // Check if should upload to S3
+    const shouldUploadToS3 = s3 === 'true' || s3 === '1' || upload === 'true' || upload === '1';
 
-    if (name && typeof name === 'string') {
-      const nameExt = `${name.replace(/\//g, '-')}.${format}`;
-      const fileName = contentDisposition(nameExt, { fallback: false });
-      res.header('Content-Disposition', fileName);
+    if (shouldUploadToS3) {
+      // Upload to S3 and return URL
+      const s3Url = await uploadToS3(result, {
+        filename: (filename as string) || result.filename,
+        title: title as string | undefined,
+      });
+
+      if (json === 'true' || json === '1') {
+        res.json({ src: s3Url });
+      } else {
+        res.redirect(s3Url);
+      }
+    } else {
+      // Return file directly
+      res.contentType(result.contentType);
+
+      if (name && typeof name === 'string') {
+        const nameExt = `${name.replace(/\//g, '-')}.${format}`;
+        const fileName = contentDisposition(nameExt, { fallback: false });
+        res.header('Content-Disposition', fileName);
+      }
+
+      res.send(result.buffer);
     }
-
-    res.send(result.buffer);
   } catch (error) {
     next(error);
   }

@@ -75,9 +75,11 @@ src/
 ### Request Flow
 1. Request arrives at `GET /report/:format` (format: pdf or png)
 2. `report.controller.ts` validates format and URL parameter
-3. `createFile.ts` uses Puppeteer to render the URL
-4. Response is sent directly to client with appropriate Content-Type
-5. Optionally, files can be uploaded to S3 using `uploadToS3.ts`
+3. `createFile.ts` uses Puppeteer to render the URL to buffer
+4. If `s3=true` or `upload=true`:
+   - File is uploaded to S3 using `uploadToS3.ts`
+   - Response is either redirect to S3 URL or JSON with URL (if `json=true`)
+5. Otherwise, file is sent directly to client with appropriate Content-Type and headers
 
 ### Key Components
 
@@ -109,27 +111,42 @@ src/
 
 ### GET /report/:format
 
-Renders a URL to the specified format (pdf or png).
+Renders a URL to the specified format (pdf or png). Can either return the file directly or upload to S3.
 
 **Path Parameters:**
 - `format` - Output format: `pdf` or `png` (required)
 
 **Query Parameters:**
 - `url` - URL to render (required)
-- `name` - Optional filename for Content-Disposition header
+- `name` - Optional filename for Content-Disposition header (when returning directly)
 - `width` - PNG width in pixels (default: 870)
 - `height` - PNG height in pixels (default: 600)
 - `media` - Media type emulation for PNG (e.g., "print", "screen")
 - `background` - Include background in PNG: "true" or "1" (default: false)
 - `scale` - PNG device scale factor (default: 2)
 
-**Example:**
+**S3 Upload Parameters:**
+- `s3` or `upload` - Upload to S3: "true" or "1" (default: return directly)
+- `filename` - Custom filename for S3 (auto-generated UUID if not provided)
+- `title` - Title for Content-Disposition header in S3
+- `json` - Return JSON with S3 URL: "true" or "1" (default: redirect to S3 URL)
+
+**Examples:**
 ```bash
-# Render PDF
+# Render PDF and return directly
 curl "http://localhost:8999/report/pdf?url=https://example.com"
 
 # Render PNG with custom dimensions
 curl "http://localhost:8999/report/png?url=https://example.com&width=1920&height=1080&scale=1"
+
+# Render PDF, upload to S3, and redirect to S3 URL
+curl "http://localhost:8999/report/pdf?url=https://example.com&s3=true"
+
+# Render PDF, upload to S3, and return JSON with S3 URL
+curl "http://localhost:8999/report/pdf?url=https://example.com&s3=true&json=true"
+
+# Upload to S3 with custom filename and title
+curl "http://localhost:8999/report/pdf?url=https://example.com&s3=true&filename=my-report.pdf&title=My%20Report"
 ```
 
 ## Technical Notes

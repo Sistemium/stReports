@@ -1,4 +1,5 @@
 import puppeteer, { Page } from 'puppeteer';
+import { randomUUID } from 'crypto';
 import { createDebug } from '../utils/debug.js';
 import config from '../config/environment.js';
 
@@ -29,6 +30,9 @@ export async function renderReport(
   options: RenderOptions = {}
 ): Promise<RenderResult> {
   const start = Date.now();
+
+  // Generate filename if not provided
+  const finalFilename = filename || `${randomUUID()}.${format}`;
 
   debug('renderReport:', format, url);
 
@@ -62,7 +66,7 @@ export async function renderReport(
 
   return {
     url,
-    filename,
+    filename: finalFilename,
     processingTime: Date.now() - start,
     contentType: getContentType(format),
     buffer,
@@ -70,7 +74,7 @@ export async function renderReport(
 }
 
 async function pageGo(page: Page, url: string): Promise<void> {
-  await page.setDefaultNavigationTimeout(config.timeout);
+  page.setDefaultNavigationTimeout(config.timeout);
   await page.goto(url, { waitUntil: 'networkidle0' });
 }
 
