@@ -7,7 +7,8 @@
     "dev": "tsx watch -r dotenv-flow/config src/app.ts",
     "build": "tsc",
     "start": "node dist/app.js",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "deploy": "./deploy.sh"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.926.0",

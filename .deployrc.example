@@ -1,0 +1,20 @@
+# Deployment configuration
+# Copy this file to .deployrc and configure your settings
+
+# Server hostname or IP (required)
+SERVER=user@example.com
+
+# Remote directory (default: /var/www/stReports)
+REMOTE_DIR=/var/www/stReports
+
+# PM2 process name (required)
+PM2_NAME=stReports
+
+# PM2 logs directory (default: /var/www/logs)
+PM2_LOGS_DIR=/var/www/logs
+
+# Node environment (default: production)
+NODE_ENV=production
+
+# Server port (optional, defaults to value in .env.production)
+# PORT=8999

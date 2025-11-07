@@ -32,6 +32,29 @@ npm start
 ```
 Runs the compiled JavaScript from the `dist` folder.
 
+### Deployment
+```bash
+npm run deploy
+```
+Deploys the application to a remote server using rsync and PM2.
+
+**Setup:**
+1. Copy `.deployrc.example` to `.deployrc`
+2. Configure server settings in `.deployrc`:
+   - `SERVER` - SSH connection string (e.g., user@example.com)
+   - `REMOTE_DIR` - Remote directory (default: /var/www/stReports)
+   - `PM2_NAME` - PM2 process name
+   - `PM2_LOGS_DIR` - PM2 logs directory (default: /var/www/logs)
+3. Copy `.env.production.example` to `.env.production` and configure production environment variables
+4. Run `npm run deploy`
+
+The deployment script will:
+- Build the TypeScript code
+- Sync dist/, package.json, and .env to the server
+- Install production dependencies on the server
+- Create PM2 ecosystem config with logging
+- Start or restart the PM2 process
+
 ## Environment Configuration
 
 Copy `.env.example` to `.env` and configure the following variables:
