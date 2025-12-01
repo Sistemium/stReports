@@ -17,7 +17,7 @@
     "cors": "^2.8.5",
     "debug": "^4.3.7",
     "dotenv-flow": "^4.1.0",
-    "express": "^5.1.0",
+    "express": "^5.2.0",
     "puppeteer-core": "^24.29.1"
   },
   "devDependencies": {
