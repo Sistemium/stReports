@@ -6,6 +6,11 @@ const COMMON_ARGS = [
   '--disable-dev-shm-usage',
   '--no-zygote',
   '--disable-gpu',
+  '--disable-vulkan',
+  '--disable-software-rasterizer',
+  '--disable-dbus',
+  '--disable-features=Accessibility',
+  '--disable-accessibility',
 ];
 
 export async function launchBrowser(
