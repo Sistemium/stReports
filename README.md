@@ -33,6 +33,9 @@ npm run build
 # Render PDF
 GET /report/pdf?url=https://example.com
 
+# Render PDF as a single continuous page (no pagination)
+GET /report/pdf?url=https://example.com&singlePage=true
+
 # Render PNG with custom size
 GET /report/png?url=https://example.com&width=1920&height=1080
 

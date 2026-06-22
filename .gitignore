@@ -17,3 +17,5 @@ pm2
 .env.local
 .env.production
 .deployrc
+/.remember/logs
+.remember/tmp/save-session.pid

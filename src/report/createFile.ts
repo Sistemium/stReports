@@ -12,7 +12,13 @@ export interface RenderOptions {
   media?: string;
   background?: boolean;
   scale?: number;
+  singlePage?: boolean;
 }
+
+// A4 width and 1cm margin expressed in CSS pixels at 96 DPI.
+// Used to render a single continuous PDF page without pagination.
+const A4_WIDTH_PX = 794; // 210mm at 96 DPI
+const PDF_MARGIN_PX = 38; // 1cm at 96 DPI
 
 export interface RenderResult {
   url: string;
@@ -46,7 +52,7 @@ export async function renderReport(
     if (format === 'png') {
       buffer = await renderPng(page, url, options);
     } else if (format === 'pdf') {
-      buffer = await renderPdf(page, url);
+      buffer = await renderPdf(page, url, options);
     } else {
       throw new Error(`Unsupported format: ${format}`);
     }
@@ -75,12 +81,42 @@ async function pageGo(page: Page, url: string): Promise<void> {
   await page.goto(url, { waitUntil: 'networkidle0' });
 }
 
-async function renderPdf(page: Page, url: string): Promise<Buffer> {
+async function renderPdf(page: Page, url: string, options: RenderOptions = {}): Promise<Buffer> {
+  if (options.singlePage) {
+    return renderSinglePagePdf(page, url);
+  }
+
   await pageGo(page, url);
 
   const buffer = await page.pdf({
     format: 'A4',
     printBackground: true,
+    margin: { top: '1cm', bottom: '1cm', left: '1cm', right: '1cm' },
+  });
+
+  return Buffer.from(buffer);
+}
+
+// Renders the whole document as one continuous A4-wide page (no pagination).
+// The content height is measured at the printable width and the PDF page height
+// is set to fit it, plus top/bottom margins, so nothing spills onto a second page.
+async function renderSinglePagePdf(page: Page, url: string): Promise<Buffer> {
+  const contentWidth = A4_WIDTH_PX - PDF_MARGIN_PX * 2;
+
+  // Lay the page out at the printable width before navigation so responsive
+  // and lazy-loaded content renders exactly as it will be printed.
+  await page.setViewport({ width: contentWidth, height: 600, deviceScaleFactor: 1 });
+
+  await pageGo(page, url);
+
+  // Measure in print media so the height matches what page.pdf actually renders.
+  await page.emulateMediaType('print');
+  const contentHeight = await page.evaluate(() => document.documentElement.scrollHeight);
+
+  const buffer = await page.pdf({
+    printBackground: true,
+    width: `${A4_WIDTH_PX}px`,
+    height: `${contentHeight + PDF_MARGIN_PX * 2}px`,
     margin: { top: '1cm', bottom: '1cm', left: '1cm', right: '1cm' },
   });
 

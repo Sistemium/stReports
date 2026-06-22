@@ -21,7 +21,8 @@ export async function renderHandler(
       upload,
       filename,
       title,
-      json
+      json,
+      singlePage
     } = req.query;
     const { format } = req.params;
 
@@ -42,6 +43,7 @@ export async function renderHandler(
       media: media as string | undefined,
       background: background === 'true' || background === '1',
       scale: parseInt(scale as string, 10),
+      singlePage: singlePage === 'true' || singlePage === '1',
     };
 
     if (width && height) {

@@ -174,6 +174,7 @@ Renders a URL to the specified format (pdf or png). Can either return the file d
 - `media` - Media type emulation for PNG (e.g., "print", "screen")
 - `background` - Include background in PNG: "true" or "1" (default: false)
 - `scale` - PNG device scale factor (default: 2)
+- `singlePage` - Render PDF as one continuous page without pagination: "true" or "1" (default: false, A4 paged). Keeps A4 width and grows the page height to fit the full content. PDF only.
 
 **S3 Upload Parameters:**
 - `s3` or `upload` - Upload to S3: "true" or "1" (default: return directly)
@@ -185,6 +186,9 @@ Renders a URL to the specified format (pdf or png). Can either return the file d
 ```bash
 # Render PDF and return directly
 curl "http://localhost:8999/report/pdf?url=https://example.com"
+
+# Render PDF as a single continuous page (no pagination)
+curl "http://localhost:8999/report/pdf?url=https://example.com&singlePage=true"
 
 # Render PNG with custom dimensions
 curl "http://localhost:8999/report/png?url=https://example.com&width=1920&height=1080&scale=1"
